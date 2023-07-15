@@ -83,10 +83,10 @@ let common = {
 
     auth_send: () => {
         // vars
-        let data = {phone: gv('phone')};
-        let location = {dpt: 'auth', act: 'send'};
+        let data = { phone: gv('phone') };
+        let location = { dpt: 'auth', act: 'send' };
         // call
-        request({location: location, data: data}, (result) => {
+        request({ location: location, data: data }, (result) => {
             if (result.error_msg) {
                 html('login_note', result.error_msg);
                 remove_class('login_note', 'fade');
@@ -118,7 +118,8 @@ let common = {
         let data = { search: gv('search') };
         let location = { dpt: 'search', act: act };
         // call
-        request({location: location, data: data}, (result) => {
+
+        request({ location: location, data: data }, (result) => {
             html('table', result.html);
             html('paginator', result.paginator);
         });
@@ -131,10 +132,10 @@ let common = {
         cancel_event(e);
         common.menu_popup_hide_all('all');
         // vars
-        let data = {plot_id: plot_id};
-        let location = {dpt: 'plot', act: 'edit_window'};
+        let data = { plot_id: plot_id };
+        let location = { dpt: 'plot', act: 'edit_window' };
         // call
-        request({location: location, data: data}, (result) => {
+        request({ location: location, data: data }, (result) => {
             common.modal_show(400, result.html);
         });
     },
@@ -150,9 +151,62 @@ let common = {
             price: gv('price'),
             offset: global.offset
         };
-        let location = {dpt: 'plot', act: 'edit_update'};
+        let location = { dpt: 'plot', act: 'edit_update' };
         // call
-        request({location: location, data: data}, (result) => {
+        request({ location: location, data: data }, (result) => {
+            common.modal_hide();
+            html('table', result.html);
+        });
+    },
+
+    // user
+
+    user_edit_window: (user_id, e) => {
+        cancel_event(e);
+        common.menu_popup_hide_all('all');
+        const data = { user_id };
+        const location = { dpt: 'user', act: 'edit_window' };
+        request({ location, data }, (result) => {
+            common.modal_show(400, result.html);
+        });
+    },
+
+    user_delete_window: (user_id, e) => {
+        cancel_event(e);
+        common.menu_popup_hide_all('all');
+        const data = { user_id };
+        const location = { dpt: 'user', act: 'delete_window' };
+
+        request({ location, data }, (result) => {
+            common.modal_show(400, result.html);
+        });
+    },
+
+    user_delete: (user_id = 0) => {
+        if (!user_id) return;
+
+        const location = { dpt: 'user', act: 'user_delete' };
+        request({ location, data: { user_id } }, (result) => {
+            if (result === null) { return; }
+            common.modal_hide();
+            html('table', result.html);
+        });
+    },
+
+    user_edit_update: (user_id = 0) => {
+        const data = {
+            user_id,
+            first_name: gv('first_name'),
+            last_name: gv('last_name'),
+            phone: gv('phone'),
+            email: gv('email'),
+            plots: gv('plots'),
+            offset: global.offset
+        };
+
+        const location = { dpt: 'user', act: 'edit_update' };
+        request({ location, data }, (result) => {
+            if (result === null) { return; }
             common.modal_hide();
             html('table', result.html);
         });
